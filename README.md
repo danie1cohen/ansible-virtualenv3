@@ -36,4 +36,4 @@ BSD
 Author Information
 ------------------
 
-[Dan Cohen](www.dancohen.io)
+[Dan Cohen](https://www.dancohen.io)
