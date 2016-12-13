@@ -2,4 +2,4 @@
 - hosts: localhost
   remote_user: root
   roles:
-    - https://github.com/danie1cohen/ansible-virtualenv3
+    - ansible-virtualenv3
