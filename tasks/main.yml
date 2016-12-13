@@ -1,0 +1,50 @@
+--- # roles/airflow/tasks/main.yml
+
+- name: install apt-deps
+  apt: name={{ item }} state=present update_cache=yes
+  with_items: "{{ virtualenv3_dependencies }}"
+  become: yes
+
+- name: download virtualenvwrapper
+  pip: name=virtualenvwrapper state=present
+  become: yes
+
+- name: update pip
+  pip: name=pip state=latest
+  become: yes
+
+- name: install virtualenvwrapper
+  pip: name=virtualenvwrapper state=present
+  become: yes
+
+- name: create workon home
+  file: path={{ workon_home }} state=directory mode=0700 
+        owner={{ ansible_ssh_user }} group={{ ansible_ssh_user }}
+  become: yes
+
+- name: create virtualenv
+  shell: "virtualenv -p `which python3` {{ workon_home }}/{{ project }}" 
+  args:
+    creates: "{{ workon_home }}/{{ project }}"
+
+- name: install security packages
+  pip: name={{ item }} state=latest virtualenv={{ workon_home }}/{{ project }}
+  with_items: "{{ virtualenv3_security_requirements }}"
+
+- name: set permission on workon_home
+  file: path={{ workon_home }} recurse=yes 
+        mode=0775 group={{ ansible_ssh_user }} owner={{ ansible_ssh_user }}
+
+- name: create profile
+  file: path=/home/{{ ansible_ssh_user }}/.profile state=file
+        mode=0700 owner={{ ansible_ssh_user }} group={{ ansible_ssh_user }}
+  become: yes
+
+- name: set up profile to activate virtualenv on entry
+  blockinfile: 
+    dest: /home/{{ ansible_ssh_user }}/.profile 
+    block: |
+      export WORKON_HOME={{ workon_home }}
+      source virtualenvwrapper.sh
+      workon {{ project }}
+      cd {{ install_path }}

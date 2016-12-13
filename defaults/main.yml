@@ -1,0 +1,23 @@
+--- # roles/virtualenv3/defaults/main.yml
+
+workon_home: "{{ ansible_ssh_user }}/.virtualenvs"
+
+project: virtualenv3_project
+
+install_path: /opt/{{ project }}
+
+virtualenv3_dependencies:
+  - build-essential
+  - python-dev
+  - python-pip
+  - python3-dev
+  - python-virtualenv
+  - libssl-dev
+  - libffi-dev
+
+virtualenv3_security_requirements:
+  - pyopenssl
+  - ndg-httpsclient
+  - pyasn1
+
+
