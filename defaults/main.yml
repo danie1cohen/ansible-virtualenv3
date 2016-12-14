@@ -1,9 +1,8 @@
 --- # roles/virtualenv3/defaults/main.yml
 
 workon_home: "{{ ansible_ssh_user }}/.virtualenvs"
-
 project: virtualenv3_project
-
+virtualenv: "{{ workon_home }}/{{ project }}"
 install_path: /opt/{{ project }}
 
 virtualenv3_dependencies:
@@ -19,5 +18,3 @@ virtualenv3_security_requirements:
   - pyopenssl
   - ndg-httpsclient
   - pyasn1
-
-
