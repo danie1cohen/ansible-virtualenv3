@@ -46,5 +46,3 @@
     block: |
       export WORKON_HOME={{ workon_home }}
       source virtualenvwrapper.sh
-      workon {{ project }}
-      cd {{ install_path }}
