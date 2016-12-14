@@ -3,7 +3,7 @@
 workon_home: "{{ ansible_ssh_user }}/.virtualenvs"
 project: virtualenv3_project
 virtualenv: "{{ workon_home }}/{{ project }}"
-install_path: /opt/{{ project }}
+virtualenv_pip: "{{ virtualenv }}/bin/pip"
 
 virtualenv3_dependencies:
   - build-essential
