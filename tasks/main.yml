@@ -18,8 +18,7 @@
   become: yes
 
 - name: create workon home
-  file: path={{ workon_home }} state=directory mode=0700
-        owner={{ ansible_ssh_user }} group={{ ansible_ssh_user }}
+  file: path={{ workon_home }} state=directory
   become: yes
 
 - name: create virtualenv
@@ -30,10 +29,6 @@
 - name: install security packages
   pip: name={{ item }} state=latest executable={{ virtualenv_pip }}
   with_items: "{{ virtualenv3_security_requirements }}"
-
-- name: set permission on workon_home
-  file: path={{ workon_home }} recurse=yes
-        mode=0775 group={{ ansible_ssh_user }} owner={{ ansible_ssh_user }}
 
 - name: create profile
   file: path=/home/{{ ansible_ssh_user }}/.profile state=file
@@ -46,5 +41,3 @@
     block: |
       export WORKON_HOME={{ workon_home }}
       source virtualenvwrapper.sh
-      workon {{ project }}
-      cd {{ install_path }}
