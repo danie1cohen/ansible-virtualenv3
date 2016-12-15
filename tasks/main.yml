@@ -18,13 +18,14 @@
   become: yes
 
 - name: create workon home
-  file: path={{ workon_home }} state=directory
+  file: path={{ workon_home }} state=directory mode=0775
+        owner={{ ansible_ssh_user }} group={{ ansible_ssh_user }}
   become: yes
 
 - name: create virtualenv
   shell: "virtualenv -p `which python3` {{ virtualenv }}"
   args:
-    creates: "{{ workon_home }}/{{ project }}"
+    creates: "{{ virtualenv }}"
 
 - name: install security packages
   pip: name={{ item }} state=latest executable={{ virtualenv_pip }}
