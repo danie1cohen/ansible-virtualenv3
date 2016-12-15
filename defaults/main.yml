@@ -1,6 +1,6 @@
 --- # roles/virtualenv3/defaults/main.yml
 
-workon_home: "{{ ansible_ssh_user }}/.virtualenvs"
+workon_home: "/home/{{ ansible_ssh_user }}/.virtualenvs"
 project: virtualenv3_project
 virtualenv: "{{ workon_home }}/{{ project }}"
 virtualenv_pip: "{{ virtualenv }}/bin/pip"
