@@ -19,7 +19,7 @@
 
 - name: create workon home
   file: path={{ workon_home }} state=directory mode=0775
-        owner={{ ansible_ssh_user }} group={{ ansible_ssh_user }}
+        owner={{ ansible_user_id }} group={{ ansible_user_id }}
   become: yes
 
 - name: create virtualenv
@@ -32,13 +32,13 @@
   with_items: "{{ virtualenv3_security_requirements }}"
 
 - name: create profile
-  file: path=/home/{{ ansible_ssh_user }}/.profile state=file
-        mode=0700 owner={{ ansible_ssh_user }} group={{ ansible_ssh_user }}
+  file: path=/home/{{ ansible_user_id }}/.profile state=file
+        mode=0700 owner={{ ansible_user_id }} group={{ ansible_user_id }}
   become: yes
 
-- name: set up profile to activate virtualenv on entry
+- name: add env resources to .profile
   blockinfile:
-    dest: /home/{{ ansible_ssh_user }}/.profile
+    dest: /home/{{ ansible_user_id }}/.profile
     block: |
       export WORKON_HOME={{ workon_home }}
       source virtualenvwrapper.sh
