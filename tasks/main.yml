@@ -32,9 +32,7 @@
   with_items: "{{ virtualenv3_security_requirements }}"
 
 - name: create profile
-  file: path=/home/{{ ansible_user_id }}/.profile state=file
-        mode=0700 owner={{ ansible_user_id }} group={{ ansible_user_id }}
-  become: yes
+  file: path=/home/{{ ansible_user_id }}/.profile state=touch
 
 - name: add env resources to .profile
   blockinfile:
