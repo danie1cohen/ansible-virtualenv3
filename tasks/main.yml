@@ -1,7 +1,11 @@
 --- # roles/airflow/tasks/main.yml
 
+- name: update cache
+  apt: update_cache=yes cache_valid_time=3600
+  become: yes
+
 - name: install apt-deps
-  apt: name={{ item }} state=present update_cache=yes
+  apt: name={{ item }} state=present
   with_items: "{{ virtualenv3_dependencies }}"
   become: yes
 
@@ -19,24 +23,32 @@
 
 - name: create workon home
   file: path={{ workon_home }} state=directory mode=0775
-        owner={{ ansible_user_id }} group={{ ansible_user_id }}
+        owner={{ virtualenv_user }} group={{ virtualenv_user }}
   become: yes
 
 - name: create virtualenv
-  shell: "virtualenv -p `which python3` {{ virtualenv }}"
+  shell: "virtualenv -p {{ virtualenv_python }} {{ virtualenv }}"
   args:
     creates: "{{ virtualenv }}"
+
+- name: set venv permissions
+  file: path={{ virtualenv }} state=directory mode=0775 recurse=yes
+        owner={{ virtualenv_user }} group={{ virtualenv_user }}
+  become: yes
 
 - name: install security packages
   pip: name={{ item }} state=latest executable={{ virtualenv_pip }}
   with_items: "{{ virtualenv3_security_requirements }}"
 
 - name: create profile
-  file: path=/home/{{ ansible_user_id }}/.profile state=touch
+  copy: content="" dest=/home/{{ virtualenv_user }}/.profile force=no
+        owner={{ virtualenv_user }} group={{ virtualenv_user }} mode=0600
 
 - name: add env resources to .profile
   blockinfile:
-    dest: /home/{{ ansible_user_id }}/.profile
+    dest: /home/{{ virtualenv_user }}/.profile
+    insertbefore: BOF
+    state: present
     block: |
       export WORKON_HOME={{ workon_home }}
       source virtualenvwrapper.sh
