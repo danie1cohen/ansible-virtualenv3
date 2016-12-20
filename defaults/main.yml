@@ -4,6 +4,8 @@ workon_home: "/home/{{ ansible_user_id }}/.virtualenvs"
 project: virtualenv3_project
 virtualenv: "{{ workon_home }}/{{ project }}"
 virtualenv_pip: "{{ virtualenv }}/bin/pip"
+virtualenv_user: "{{ ansible_user_id }}"
+virtualenv_python: "`which python3`"
 
 virtualenv3_dependencies:
   - build-essential
