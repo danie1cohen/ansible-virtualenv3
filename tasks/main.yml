@@ -43,6 +43,7 @@
 - name: create profile
   copy: content="" dest=/home/{{ virtualenv_user }}/.profile force=no
         owner={{ virtualenv_user }} group={{ virtualenv_user }} mode=0600
+  become: yes
 
 - name: add env resources to .profile
   blockinfile:
@@ -52,3 +53,4 @@
     block: |
       export WORKON_HOME={{ workon_home }}
       source virtualenvwrapper.sh
+  become: yes
