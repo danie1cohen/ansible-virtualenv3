@@ -30,11 +30,13 @@
   shell: "virtualenv -p {{ virtualenv_python }} {{ virtualenv }}"
   args:
     creates: "{{ virtualenv }}"
+  register: create_venv
 
 - name: set venv permissions
   file: path={{ virtualenv }} state=directory mode=0775 recurse=yes
         owner={{ virtualenv_user }} group={{ virtualenv_user }}
   become: yes
+  when: create_venv|changed
 
 - name: install security packages
   pip: name={{ item }} state=latest executable={{ virtualenv_pip }}
