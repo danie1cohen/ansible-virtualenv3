@@ -50,6 +50,7 @@
     dest: /home/{{ virtualenv_user }}/.profile
     insertbefore: BOF
     state: present
+    marker: "# {mark} virtualenv managed block"
     block: |
       export WORKON_HOME={{ workon_home }}
       source virtualenvwrapper.sh
