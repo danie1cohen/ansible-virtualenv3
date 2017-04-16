@@ -1,11 +1,13 @@
 --- # roles/virtualenv3/defaults/main.yml
 
 project: virtualenv3_project
-workon_home: "/home/{{ ansible_user_id }}/.virtualenvs"
+workon_home: /home/{{ ansible_user_id }}/.virtualenvs
 virtualenv: "{{ workon_home }}/{{ project }}"
 virtualenv_pip: "{{ virtualenv }}/bin/pip"
 virtualenv_user: "{{ ansible_user_id }}"
+virtualenv_user_group: "{{ virtualenv_user }}"
 virtualenv_python: "`which python3`"
+virtualenv_profile: /home/{{ virtualenv_user }}/.profile
 
 virtualenv3_dependencies:
   - build-essential
@@ -18,6 +20,7 @@ virtualenv3_dependencies:
 
 virtualenv3_security_requirements:
   - setuptools
+  - pip
   - pyopenssl
   - ndg-httpsclient
   - pyasn1
