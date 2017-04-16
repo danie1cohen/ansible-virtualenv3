@@ -1,0 +1,8 @@
+
+- name: download virtualenvwrapper
+  pip: name=virtualenvwrapper state=present executable={{ virtualenv_base_pip }}
+  become: yes
+
+- name: update pip
+  pip: name=pip state=latest executable={{ virtualenv_base_pip }}
+  become: yes

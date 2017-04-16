@@ -1,29 +1,17 @@
 --- # roles/airflow/tasks/main.yml
 
-- name: update cache
-  apt: update_cache=yes cache_valid_time=3600
-  become: yes
+- include: Debian.yml
+  when: ansible_os_family == "Debian"
 
-- name: install apt-deps
-  apt: name={{ item }} state=present
-  with_items: "{{ virtualenv3_dependencies }}"
-  become: yes
+- include: custom_base_pip.yml
+  when: virtualenv_base_pip is defined
 
-- name: download virtualenvwrapper
-  pip: name=virtualenvwrapper state=present
-  become: yes
-
-- name: update pip
-  pip: name=pip state=latest
-  become: yes
-
-- name: install virtualenvwrapper
-  pip: name=virtualenvwrapper state=present
-  become: yes
+- include: standard_base_pip.yml
+  when: virtualenv_base_pip is undefined
 
 - name: create workon home
   file: path={{ workon_home }} state=directory mode=0775
-        owner={{ virtualenv_user }} group={{ virtualenv_user }}
+        owner={{ virtualenv_user }} group={{ virtualenv_user_group }}
   become: yes
 
 - name: create virtualenv
@@ -34,7 +22,7 @@
 
 - name: set venv permissions
   file: path={{ virtualenv }} state=directory mode=0775 recurse=yes
-        owner={{ virtualenv_user }} group={{ virtualenv_user }}
+        owner={{ virtualenv_user }} group={{ virtualenv_user_group }}
   become: yes
   when: create_venv|changed
 
@@ -42,14 +30,18 @@
   pip: name={{ item }} state=latest executable={{ virtualenv_pip }}
   with_items: "{{ virtualenv3_security_requirements }}"
 
+- stat: path={{ virtualenv_profile }}
+  register: profile
+
 - name: create profile
-  copy: content="" dest=/home/{{ virtualenv_user }}/.profile force=no
-        owner={{ virtualenv_user }} group={{ virtualenv_user }} mode=0600
+  copy: content="" dest={{ virtualenv_profile }} force=no
+        owner={{ virtualenv_user }} group={{ virtualenv_user_group }} mode=0600
   become: yes
+  when: profile.stat.exists == False
 
 - name: add env resources to .profile
   blockinfile:
-    dest: /home/{{ virtualenv_user }}/.profile
+    dest: "{{ virtualenv_profile }}"
     insertbefore: BOF
     state: present
     marker: "# {mark} virtualenv managed block"

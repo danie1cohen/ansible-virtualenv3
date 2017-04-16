@@ -1,0 +1,10 @@
+--- # tasks/Debian.yml
+
+- name: update cache
+  apt: update_cache=yes cache_valid_time=3600
+  become: yes
+
+- name: install apt-deps
+  apt: name={{ item }} state=present
+  with_items: "{{ virtualenv3_dependencies }}"
+  become: yes
