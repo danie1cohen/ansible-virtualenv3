@@ -1,0 +1,44 @@
+--- # virtualen3/tasks/Windows.yml
+
+- name: check for chocolatey exec
+  win_stat: path=C:\ProgramData\chocolatey\choco.exe
+  register: result
+
+- name: install chocolatey
+  win_shell: iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+  when: not result.stat.exists
+
+- name: install python3
+  win_chocolatey:
+    name: python3
+    state: present
+
+- name: set python path enviroment variable
+  win_environment: name=PYTHONPATH level=user
+                   value=C:\Python36\Lib\site-packages;C:\Python36\Lib;
+                   state=absent
+
+- name: install virtualenv
+  win_shell: "{{ virtualenv_base_pip }} install virtualenv"
+  register: venvwrapper_install
+  changed_when: "'install' in venvwrapper_install.stdout"
+
+- name: create workon home
+  win_file: path={{ workon_home }} state=directory
+
+- name: set workon_home enviroment variable
+  win_environment: name=WORKON_HOME value={{ workon_home }} level=user
+
+- name: create virtualenv
+  win_shell: virtualenv -p {{ virtualenv_python }} {{ project }}
+  args:
+    chdir: "{{ workon_home }}"
+    creates: "{{ virtualenv }}"
+  register: create_venv
+  failed_when: "'error' in create_venv.stderr"
+
+- name: copy DLLs to the virtualenvironment
+  win_robocopy:
+    src: "{{ virtualenv_python|win_dirname }}\\DLLs"
+    dest: "{{ virtualenv }}\\DLLs"
+    recurse: yes

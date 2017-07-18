@@ -1,0 +1,8 @@
+--- # tasks/Centos.yml
+
+- include_vars: Centos_vars.yml
+
+- name: install yum deps
+  yum: name={{ item }} state=present update_cache=yes
+  with_items: "{{ virtualenv3_dependencies }}"
+  become: yes

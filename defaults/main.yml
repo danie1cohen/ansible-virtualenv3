@@ -9,14 +9,8 @@ virtualenv_user_group: "{{ virtualenv_user }}"
 virtualenv_python: "`which python3`"
 virtualenv_profile: /home/{{ virtualenv_user }}/.profile
 
-virtualenv3_dependencies:
-  - build-essential
-  - python-dev
-  - python-pip
-  - python3-dev
-  - python-virtualenv
-  - libssl-dev
-  - libffi-dev
+# supplied based on operating system
+virtualenv3_dependencies: []
 
 virtualenv3_security_requirements:
   - setuptools

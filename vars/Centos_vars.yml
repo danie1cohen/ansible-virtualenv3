@@ -1,0 +1,9 @@
+virtualenv3_dependencies:
+  - redhat-rpm-config
+  - gcc
+  - libffi-devel
+  - openssl-devel
+  - python-devel
+  - python36u-devel.x86_64
+
+virtualenv_python: "`which python3.6`"

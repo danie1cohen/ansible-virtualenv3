@@ -1,0 +1,10 @@
+virtualenv3_dependencies:
+  - build-essential
+  - python-dev
+  - python-pip
+  - python3-dev
+  - python-virtualenv
+  - libssl-dev
+  - libffi-dev
+
+virtualenv_python: "`which python3`"

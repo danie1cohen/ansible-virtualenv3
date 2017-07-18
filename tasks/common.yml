@@ -1,0 +1,48 @@
+--- # group_vars/common.yml
+
+- include: standard_base_pip.yml
+  when: virtualenv_base_pip is undefined
+
+- include: custom_base_pip.yml
+  when: virtualenv_base_pip is defined
+
+- name: create workon home
+  file: path={{ workon_home }} state=directory mode=0775
+        owner={{ virtualenv_user }} group={{ virtualenv_user_group }}
+  become: yes
+
+- name: create virtualenv
+  shell: "virtualenv -p {{ virtualenv_python }} {{ virtualenv }}"
+  args:
+    creates: "{{ virtualenv }}"
+  register: create_venv
+
+- name: set venv permissions
+  file: path={{ virtualenv }} state=directory mode=0775 recurse=yes
+        owner={{ virtualenv_user }} group={{ virtualenv_user_group }}
+  become: yes
+  when: create_venv|changed
+
+- name: install security packages
+  pip: name={{ item }} state=latest executable={{ virtualenv_pip }}
+  with_items: "{{ virtualenv3_security_requirements }}"
+
+- stat: path={{ virtualenv_profile }}
+  register: profile
+
+- name: create profile
+  copy: content="" dest={{ virtualenv_profile }} force=no
+        owner={{ virtualenv_user }} group={{ virtualenv_user_group }} mode=0600
+  become: yes
+  when: profile.stat.exists == False
+
+- name: add env resources to .profile
+  blockinfile:
+    dest: "{{ virtualenv_profile }}"
+    insertbefore: BOF
+    state: present
+    marker: "# {mark} virtualenv managed block"
+    block: |
+      export WORKON_HOME={{ workon_home }}
+      source virtualenvwrapper.sh
+  become: yes
